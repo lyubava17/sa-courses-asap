@@ -1,0 +1,72 @@
+@startuml
+entity "regions" as regions {
+  +region_id : SERIAL <<PK>>
+  --
+  region_name : VARCHAR(25)
+}
+
+entity "countries" as countries {
+  +country_id : CHAR(2) <<PK>>
+  --
+  country_name : VARCHAR(40)
+  region_id : INT <<FK>> -- FK to regions
+}
+
+entity "locations" as locations {
+  +location_id : SERIAL <<PK>>
+  --
+  street_address : VARCHAR(40)
+  postal_code : VARCHAR(12)
+  city : VARCHAR(30)
+  state_province : VARCHAR(25)
+  country_id : CHAR(2) <<FK>> -- FK to countries
+}
+
+entity "departments" as departments {
+  +department_id : SERIAL <<PK>>
+  --
+  department_name : VARCHAR(30)
+  location_id : INT <<FK>> -- FK to locations
+}
+
+entity "employees" as employees {
+  +employee_id : SERIAL <<PK>>
+  --
+  first_name : VARCHAR(20)
+  last_name : VARCHAR(25)
+  email : VARCHAR(50)
+  phone_number : VARCHAR(20)
+  hire_date : DATE
+  job_id : VARCHAR(10) <<FK>> -- FK to jobs
+  salary : NUMERIC(8,2)
+  manager_id : INT <<FK>> -- FK to employees (self-referencing)
+  department_id : INT <<FK>> -- FK to departments
+}
+
+entity "jobs" as jobs {
+  +job_id : VARCHAR(10) <<PK>>
+  --
+  job_title : VARCHAR(35)
+  min_salary : NUMERIC(6,2)
+  max_salary : NUMERIC(6,2)
+}
+
+entity "job_history" as job_history {
+  +employee_id : SERIAL <<PK>>
+  +start_date : DATE <<PK>>
+  --
+  end_date : DATE
+  job_id : VARCHAR(10) <<FK>> -- FK to jobs
+  department_id : INT <<FK>> -- FK to departments
+}
+
+' Defining Relationships
+
+regions ||--o{ countries : "contains"
+countries ||--o{ locations : "contains"
+locations ||--o{ departments : "has"
+departments ||--o{ employees : "employs"
+jobs ||--o{ employees : "assigns"
+employees ||--o{ job_history : "has"
+
+@enduml
